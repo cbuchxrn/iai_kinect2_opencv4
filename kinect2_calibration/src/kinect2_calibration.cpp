@@ -743,7 +743,7 @@ private:
 #if CV_MAJOR_VERSION == 2
     error = cv::stereoCalibrate(pointsBoard, pointsIr, pointsColor, cameraMatrixIr, distortionIr, cameraMatrixColor, distortionColor, sizeColor,
                                 rotation, translation, essential, fundamental, termCriteria, cv::CALIB_FIX_INTRINSIC);
-#elif CV_MAJOR_VERSION == 3
+#elif CV_MAJOR_VERSION == 3 || CV_MAJOR_VERSION == 4
     error = cv::stereoCalibrate(pointsBoard, pointsIr, pointsColor, cameraMatrixIr, distortionIr, cameraMatrixColor, distortionColor, sizeColor,
                                 rotation, translation, essential, fundamental, cv::CALIB_FIX_INTRINSIC, termCriteria);
 #endif
@@ -1091,7 +1091,7 @@ private:
     //cv::solvePnP(board, points[index], cameraMatrix, distortion, rvec, translation, false, cv::EPNP);
 #if CV_MAJOR_VERSION == 2
     cv::solvePnPRansac(board, points[index], cameraMatrix, distortion, rvec, translation, false, 300, 0.05, board.size(), cv::noArray(), cv::ITERATIVE);
-#elif CV_MAJOR_VERSION == 3
+#elif CV_MAJOR_VERSION == 3 || CV_MAJOR_VERSION == 4 
     cv::solvePnPRansac(board, points[index], cameraMatrix, distortion, rvec, translation, false, 300, 0.05, 0.99, cv::noArray(), cv::SOLVEPNP_ITERATIVE);
 #endif
     cv::Rodrigues(rvec, rotation);
@@ -1240,7 +1240,6 @@ int main(int argc, char **argv)
   std::string path = "./";
 
   ros::init(argc, argv, "kinect2_calib", ros::init_options::AnonymousName);
-
   if(!ros::ok())
   {
     return 0;
@@ -1349,6 +1348,8 @@ int main(int argc, char **argv)
   std::string topicColor = "/" + ns + K2_TOPIC_HD + K2_TOPIC_IMAGE_MONO;
   std::string topicIr = "/" + ns + K2_TOPIC_SD + K2_TOPIC_IMAGE_IR;
   std::string topicDepth = "/" + ns + K2_TOPIC_SD + K2_TOPIC_IMAGE_DEPTH;
+
+  OUT_INFO("CV_MAJOR_VERSION : " << CV_MAJOR_VERSION << std::endl);
   OUT_INFO("Start settings:" << std::endl
            << "       Mode: " FG_CYAN << (mode == RECORD ? "record" : "calibrate") << NO_COLOR << std::endl
            << "     Source: " FG_CYAN << (calibDepth ? "depth" : (source == COLOR ? "color" : (source == IR ? "ir" : "sync"))) << NO_COLOR << std::endl
